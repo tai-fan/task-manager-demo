@@ -10,8 +10,3 @@ tests=$(cat test_output.txt)
 update_pre "todo" "$todo"
 update_pre "done" "$done"
 update_pre "test" "$tests"
-
-git config user.email "you@example.com"
-git add index.html
-git commit -m "Update index.html with latest task info"
-git push
