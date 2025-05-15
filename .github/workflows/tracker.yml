@@ -1,11 +1,24 @@
 name: GitHub Projects Automation
+
 on:
   pull_request:
     types: [closed]
+
 jobs:
   move-issue-to-done:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
-      - run: echo "Simulate Issue Movement"
+      - name: Extract Issue and Move to Project
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          ISSUE_NUMBER=$(echo "${{ github.event.pull_request.body }}" | grep -o "#[0-9]*" | tr -d '#')
+          echo "Detected Issue number: $ISSUE_NUMBER"
+
+          curl -X POST \
+            -H "Authorization: token $GH_PAT" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/projects/columns/<YourColumnID>/cards \
+            -d "{\"content_id\": $ISSUE_NUMBER, \"content_type\": \"Issue\"}"
